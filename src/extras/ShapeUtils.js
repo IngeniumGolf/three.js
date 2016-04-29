@@ -1,6 +1,7 @@
 /**
  * @author zz85 / http://www.lab4games.net/zz85/blog
  */
+var earcut = require('earcut');
 
 THREE.ShapeUtils = {
 
@@ -639,6 +640,34 @@ THREE.ShapeUtils = {
 		// remove holes by cutting paths to holes and adding them to the shape
 		var shapeWithoutHoles = removeHoles( contour, holes );
 
+		/**
+		 * THREE.ShapeUtils.triangulate()
+		 * - IN
+		 * ---shapeWithoutHoles = Array[THREE.Vector2 ... ] - THREE.Vector2 = {height: float, width: float, x: float, y: float}
+		 * ---boolean = false (?)
+		 * - OUT
+		 * ---triangles = Array[Array[id1.1,id1.2,id1.3] ... ]
+		 *
+		 * earcut()
+		 * - IN
+		 * ---coordsarray = Array[x1,y1, ... ]
+		 * - OUT
+		 * ---triangles = Array[id1.1,id1.2,id1.3 ... ]
+		 */
+
+		var coordsarray = [].concat(... shapeWithoutHoles.map(function(vec){
+			return [vec.x,vec.y]
+		}));
+
+		var trianglesNew = earcut(coordsarray);
+		var formattedTrianglesNew = [];
+
+		for (i = 0; i < trianglesNew.length; i = i + 3) {
+			formattedTrianglesNew.push([trianglesNew[i],trianglesNew[i+1],trianglesNew[i+2]]);
+		}
+
+		return formattedTrianglesNew.concat();
+		/**
 		var triangles = THREE.ShapeUtils.triangulate( shapeWithoutHoles, false ); // True returns indices for points of spooled shape
 		//console.log( "triangles",triangles, triangles.length );
 
@@ -664,7 +693,7 @@ THREE.ShapeUtils = {
 
 		}
 
-		return triangles.concat();
+		return triangles.concat();*/
 
 	},
 
